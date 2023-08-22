@@ -1,10 +1,28 @@
 # Project Name
 
-*Quick description. E.g., "A tool that analyzes fruit prices over time." (Replace with your project description)*
+AutoComplete Search System, a system that provides the best suggestions of your uncompleted search query.
 
 ## Algorithms & Structures
 
-- **Example Algorithm**: Used to analyze fruit price trends. *(This is just an example. Replace with your algorithm or data structure and its role in the code flow.)*
+- **Trie (Prefix-tree) Data Structure**: read all data found in the archive, and store them in a prefix tree, where the root is the initial word of a sentence going down to the following words. For instance, we have these sentences:
+-This is a dog
+-This is a cat
+-This is not a cow
+-This guy
+
+the tree would look like:
+                This 
+                /  \
+              is   guy
+             / \
+            a   not
+           / \    \
+        cat  dog   a
+
+- **CLI**: a user friendly CLI that loops infinetely asking the user to provide input, if a # was provided at the end, the system asks for a new string, if not, the user can complete the previous a sentence. If the user provided a '~' that means he wants to quit and exit the system.
+
+
+
 
 ## Detailed Code Flow
 
