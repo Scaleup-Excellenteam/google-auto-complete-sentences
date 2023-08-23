@@ -7,6 +7,7 @@ QUIT_MESSAGE = "~"
 RESTART_MESSAGE = "#"
 MATCHES = "Matches:"
 NO_MATCHES = "No matches found."
+BEST_MATCHES = 5
 
 def get_sentences(tree, sentence):
     sentence = pd.clean_sentence(sentence)
@@ -17,15 +18,15 @@ def get_sentences(tree, sentence):
 
 def display_matches(tree, sentence):
     sentences = get_sentences(tree, sentence)
-    sentences = sorted(sentences, key=lambda x: len(x[0]))
-    sentences = sentences[:5]
+    sentences = sorted(sentences, key=lambda x: x[0])
+    sentences = sentences[:BEST_MATCHES]
     if not sentences:
         print(NO_MATCHES)
         return
-    for sentence, offsets_dict in sentences:
+    for sentence, offsets_dict, score in sentences:
         filename, offset_list = next(iter(offsets_dict.items()))
         offset_value = offset_list[0]
-        result = acd.AutoCompleteData(sentence, filename, offset_value, 0)
+        result = acd.AutoCompleteData(sentence, filename, offset_value, score)
         print(result)
 
 
