@@ -1,4 +1,5 @@
 from collections import Counter
+import Levenshtein as lev
 
 class TrieNode:
     def __init__(self, text=''):
@@ -28,46 +29,11 @@ class PrefixTree:
         else:
             current.offset[filename] = [offset]
 
-    def find(self, sentence):
-        """
-        Returns the TrieNode representing the given sentence if it exists
-        and None otherwise.
-        """
-        current = self.root
-        words = sentence.split()
-        for word in words:
-            if word not in current.children:
-                return None
-            current = current.children[word]
-
-        # New code, None returned implicitly if this is False
-        if current.is_end:
-            return current
-
-    def starts_with(self, prefix):
-        """
-        Returns a list of all sentences beginning with the given prefix, or
-        an empty list if no sentences begin with that prefix.
-        """
-        sentences = list()
-        current = self.root
-        words = prefix.split()
-        for word in words:
-            if word not in current.children:
-                return list()
-            current = current.children[word]
-
-        # New code for step 2
-        self.collect_words_with_offsets(current, prefix, sentences)
-
-        return sentences
-
     def find_sentences_starting_with(self, sentence_prefix):
         """
         Returns a list of all sentences that start with the given sentence prefix,
         along with their offsets.
         """
-        sentence_prefix = sentence_prefix.lower()
         matched_sentences = []
         current = self.root
         for word in sentence_prefix.split():
