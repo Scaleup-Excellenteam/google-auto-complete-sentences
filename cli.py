@@ -6,11 +6,15 @@ MATCHES = "Matches:"
 NO_MATCHES = "No matches found."
 
 
-def display_matches(sentence):
-    return ["damn", "this", "is", "working", "well!"]
+def display_matches(tree, sentence):
+    sentences = tree.starts_with(sentence)
+    for sentence, offset in sentences:
+        print(f"Sentence found: {sentence}, Offsets: {offset}")
+
+    # return ["damn", "this", "is", "working", "well!"]
 
 
-def run_CLI():
+def run_cli(tree):
     print(WELCOME_MSG)
     sentence = ""
     while True:
@@ -27,18 +31,11 @@ def run_CLI():
         if sentence.endswith(RESTART_MESSAGE):
             sentence = ""
 
-        matches = display_matches(sentence)
-        if matches:
-            print(MATCHES)
-            for match in matches:
-                print(f"- {match}")
-        else:
-            print(NO_MATCHES)
-
-
-def main():
-    run_CLI()
-
-
-if __name__ == "__main__":
-    main()
+        display_matches(tree, sentence)
+        # matches = display_matches(tree, sentence)
+        # if matches:
+        #     print(MATCHES)
+        #     for match in matches:
+        #         print(f"- {match}")
+        # else:
+        #     print(NO_MATCHES)
