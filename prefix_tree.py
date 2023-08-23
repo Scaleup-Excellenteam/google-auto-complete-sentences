@@ -1,6 +1,7 @@
 from collections import Counter
 import Levenshtein as lev
 
+
 class TrieNode:
     def __init__(self, text=''):
         self.text = text
@@ -35,13 +36,35 @@ class PrefixTree:
         along with their offsets.
         """
         matched_sentences = []
+        currect_prefix = ''
         current = self.root
+
+        # for word in sentence_prefix.split():
+        #     if word not in current.children:
+        #         return []
+        #     current = current.children[word]
+
+        word_count_with_distance_gt_one = 0  # Count words with Levenshtein distance > 1
         for word in sentence_prefix.split():
             if word not in current.children:
-                return []
-            current = current.children[word]
+                for child_word in current.children:
+                    distance = lev.distance(word, child_word)
+                    print(distance, word, child_word)
+                    if distance == 1:
+                        word_count_with_distance_gt_one += 1
+                        if word_count_with_distance_gt_one > 1:
+                            return []
+                        currect_prefix += child_word + ' '
+                        current = current.children[child_word]
+                        break
+                    else:
+                        return []
+            else:
+                currect_prefix += word + ' '
+                current = current.children[word]
 
-        self.collect_words_with_offsets(current, sentence_prefix, matched_sentences)
+        self.collect_words_with_offsets(current, currect_prefix[:-1], matched_sentences)
+
         return matched_sentences
 
     def collect_words_with_offsets(self, node, current_sentence, collected_sentences):
