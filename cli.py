@@ -8,10 +8,11 @@ NO_MATCHES = "No matches found."
 
 def display_matches(tree, sentence):
     sentences = tree.find_sentences_starting_with(sentence)
+    if not sentences:
+        print(NO_MATCHES)
+        return
     for sentence, offset in sentences:
-        print(f"Sentence found: {sentence}, Offsets: {offset}")
-
-    # return ["damn", "this", "is", "working", "well!"]
+        print(f'Sentence found: "{sentence}" , Offsets: {offset}')
 
 
 def run_cli(tree):
@@ -30,12 +31,6 @@ def run_cli(tree):
 
         if sentence.endswith(RESTART_MESSAGE):
             sentence = ""
+            continue
 
         display_matches(tree, sentence)
-        # matches = display_matches(tree, sentence)
-        # if matches:
-        #     print(MATCHES)
-        #     for match in matches:
-        #         print(f"- {match}")
-        # else:
-        #     print(NO_MATCHES)
