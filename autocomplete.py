@@ -17,6 +17,10 @@ def run_CLI():
         additional_input = input(f"{GET_INPUT} {sentence}")
         sentence += additional_input
 
+        if sentence == "":
+            print("Please write a sentence.")
+            continue
+
         if sentence.endswith(QUIT_MESSAGE):
             break
 
