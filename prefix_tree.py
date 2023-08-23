@@ -30,41 +30,28 @@ class PrefixTree:
         else:
             current.offset[filename] = [offset]
 
+    def dfs_find(self, current, word_list, index, path, matched_sentences):
+        if index == len(word_list):
+            self.collect_words_with_offsets(current, ' '.join(path), matched_sentences)
+            return
+
+        word = word_list[index]
+        for child_word in current.children:
+            distance = lev.distance(word, child_word)
+            if distance <= 1:
+                new_path = path + [child_word]
+                self.dfs_find(current.children[child_word], word_list, index + 1, new_path, matched_sentences)
+
     def find_sentences_starting_with(self, sentence_prefix):
         """
         Returns a list of all sentences that start with the given sentence prefix,
         along with their offsets.
         """
         matched_sentences = []
-        currect_prefix = ''
         current = self.root
+        word_list = sentence_prefix.split()
 
-        # for word in sentence_prefix.split():
-        #     if word not in current.children:
-        #         return []
-        #     current = current.children[word]
-
-        word_count_with_distance_gt_one = 0  # Count words with Levenshtein distance > 1
-        for word in sentence_prefix.split():
-            if word not in current.children:
-                for child_word in current.children:
-                    distance = lev.distance(word, child_word)
-                    print(distance, word, child_word)
-                    if distance == 1:
-                        word_count_with_distance_gt_one += 1
-                        if word_count_with_distance_gt_one > 1:
-                            return []
-                        currect_prefix += child_word + ' '
-                        current = current.children[child_word]
-                        break
-                    else:
-                        return []
-            else:
-                currect_prefix += word + ' '
-                current = current.children[word]
-
-        self.collect_words_with_offsets(current, currect_prefix[:-1], matched_sentences)
-
+        self.dfs_find(current, word_list, 0, [], matched_sentences)
         return matched_sentences
 
     def collect_words_with_offsets(self, node, current_sentence, collected_sentences):
