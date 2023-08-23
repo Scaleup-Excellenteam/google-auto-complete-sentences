@@ -62,6 +62,22 @@ class PrefixTree:
 
         return sentences
 
+    def find_sentences_starting_with(self, sentence_prefix):
+        """
+        Returns a list of all sentences that start with the given sentence prefix,
+        along with their offsets.
+        """
+        sentence_prefix = sentence_prefix.lower()
+        matched_sentences = []
+        current = self.root
+        for word in sentence_prefix.split():
+            if word not in current.children:
+                return []
+            current = current.children[word]
+
+        self.collect_words_with_offsets(current, sentence_prefix, matched_sentences)
+        return matched_sentences
+
     def collect_words_with_offsets(self, node, current_sentence, collected_sentences):
         if node.is_end:
             collected_sentences.append((current_sentence, node.offset))
@@ -73,4 +89,3 @@ class PrefixTree:
         collected_sentences = []
         self.collect_words_with_offsets(self.root, '', collected_sentences)
         return collected_sentences
-

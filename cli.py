@@ -7,7 +7,7 @@ NO_MATCHES = "No matches found."
 
 
 def display_matches(tree, sentence):
-    sentences = tree.starts_with(sentence)
+    sentences = tree.find_sentences_starting_with(sentence)
     for sentence, offset in sentences:
         print(f"Sentence found: {sentence}, Offsets: {offset}")
 
