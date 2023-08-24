@@ -1,4 +1,13 @@
 from collections import Counter
+import Levenshtein as lev
+
+replaced_letter_error = 5
+miss_or_add_letter_error = 10
+replaced_error_count = 1
+miss_or_add_error_count = 2
+max_error_to_sub = 5
+mistake_threshold = 1
+
 
 class TrieNode:
     def __init__(self, text=''):
@@ -20,7 +29,7 @@ class PrefixTree:
                 prefix = ' '.join(words[:i + 1])
                 current.children[word] = TrieNode(prefix)
             current = current.children[word]
-            current.word = sentence  # Store the sentence in the current node
+            current.word = sentence
         current.is_end = True
 
         if filename in current.offset:
@@ -28,49 +37,60 @@ class PrefixTree:
         else:
             current.offset[filename] = [offset]
 
-    def find(self, sentence):
+    def find_sentences_starting_with(self, sentence_prefix):
         """
-        Returns the TrieNode representing the given sentence if it exists
-        and None otherwise.
+        Returns a list of all sentences that start with the given sentence prefix,
+        along with their offsets.
         """
+        matched_sentences = []
         current = self.root
-        words = sentence.split()
-        for word in words:
-            if word not in current.children:
-                return None
-            current = current.children[word]
+        word_list = sentence_prefix.split()
+        score = len(sentence_prefix) * 2
 
-        # New code, None returned implicitly if this is False
-        if current.is_end:
-            return current
+        self.dfs_find(current, word_list, 0, [], matched_sentences, score)
+        return matched_sentences
 
-    def starts_with(self, prefix):
-        """
-        Returns a list of all sentences beginning with the given prefix, or
-        an empty list if no sentences begin with that prefix.
-        """
-        sentences = list()
-        current = self.root
-        words = prefix.split()
-        for word in words:
-            if word not in current.children:
-                return list()
-            current = current.children[word]
+    def dfs_find(self, current, word_list, index, path, matched_sentences, score):
+        if index == len(word_list):
+            self.collect_words_with_offsets(current, ' '.join(path), matched_sentences, score)
+            return
 
-        # New code for step 2
-        self.collect_words_with_offsets(current, prefix, sentences)
+        word = word_list[index]
+        for child_word in current.children:
+            editops = lev.editops(word, child_word)
+            distance = len(editops)
 
-        return sentences
+            # distance = lev.distance(word, child_word)
+            if distance <= mistake_threshold:
+                if distance == mistake_threshold and editops[0][0] == 'replace':
+                    score = self.fix_score(word, child_word, score, replaced_letter_error, replaced_error_count)
+                elif distance == mistake_threshold and editops[0][0] in ['insert', 'delete']:
+                    score = self.fix_score(word, child_word, score, miss_or_add_letter_error, miss_or_add_error_count)
 
-    def collect_words_with_offsets(self, node, current_sentence, collected_sentences):
+                new_path = path + [child_word]
+                self.dfs_find(current.children[child_word], word_list, index + 1, new_path, matched_sentences, score)
+
+    def fix_score(self, word, child_word, score, error, error_count):
+        if len(word) > len(child_word): # get shorter word
+            word, child_word = child_word, word
+
+        for i in range(len(word)):
+            if word[i] != child_word[i]:
+                score -= error
+                break
+            if i > max_error_to_sub:
+                continue
+            error -= error_count
+        return score
+
+    def collect_words_with_offsets(self, node, current_sentence, collected_sentences, score):
         if node.is_end:
-            collected_sentences.append((current_sentence, node.offset))
+            collected_sentences.append((current_sentence, node.offset, score))
         for word, child_node in node.children.items():
             new_sentence = current_sentence + " " + word
-            self.collect_words_with_offsets(child_node, new_sentence, collected_sentences)
+            self.collect_words_with_offsets(child_node, new_sentence, collected_sentences, score)
 
     def get_all_sentences_with_offsets(self):
         collected_sentences = []
-        self.collect_words_with_offsets(self.root, '', collected_sentences)
+        self.collect_words_with_offsets(self.root, '', collected_sentences, 0)
         return collected_sentences
-
