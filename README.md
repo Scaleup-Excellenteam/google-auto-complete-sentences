@@ -6,13 +6,13 @@ AutoComplete Search System, a system that provides the best suggestions of your 
 
 - **Pickle Module**: We used the Pickle module to load our data structure once, save it in a folder and then load it when running our auto-complete search program. The purpose of doing so is to lower the time taken to load and parse the data each time running the program, it takes approximately ~ 2 minutes to load the data into a file, and to load the file into our executable program takes around ~ 30 seconds. The module does so by Serializing our data structure from a python object into a byte stream, which we then store in a file, then it deserializes the file into a full-on ready data structure, in other words we used only two functions, pickle.dump() & pickle.load(). 
 
-- **Data Parsing**: read all data found in the archive, and store them in a prefix tree, where the root is the initial word of a sentence going down to the following words. For instance, we have these sentences:
+- **Data Parsing**: Read all data found in the archive, and store them in a prefix tree, where the root is the initial word of a sentence going down to the following words. For instance, we have these sentences:
 -This is a dog
 -This is a cat
 -This is not a cow
 -This guy
 
-the tree would look like:
+The tree would look like:
                 This 
                 /  \
               is   guy
@@ -61,7 +61,7 @@ offset: int              #  The positioning of the sentence in that file.
 score: int               #  The score of the search found. 
 
 
-TOTAL RUNTIME COMPLEXITY OF A SINGLE SEARCH: (O n*log(n)).
+TOTAL RUNTIME COMPLEXITY OF A SINGLE SEARCH: O(n*log(n)).
 
 
 
