@@ -8,24 +8,26 @@ RESTART_MESSAGE = "#"
 MATCHES = "Matches:"
 NO_MATCHES = "No matches found."
 BEST_MATCHES = 5
+SENTENCE = 0
+OFFSET_VALUE = 0
 
-def get_sentences(tree, sentence):
+def get_nodes(tree, sentence):
     sentence = pd.clean_sentence(sentence)
     sentence = pd.lowercase_and_remove_punctuation(sentence)
-    sentences = tree.find_sentences_starting_with(sentence)
-    return sentences
+    nodes_trie = tree.find_sentences_starting_with(sentence)
+    return nodes_trie
 
 
 def display_matches(tree, sentence):
-    sentences = get_sentences(tree, sentence)
-    sentences = sorted(sentences, key=lambda x: x[0])
-    sentences = sentences[:BEST_MATCHES]
-    if not sentences:
+    nodes_trie = get_nodes(tree, sentence)
+    nodes_trie = sorted(nodes_trie, key=lambda x: x[SENTENCE])
+    nodes_trie = nodes_trie[:BEST_MATCHES]
+    if not nodes_trie:
         print(NO_MATCHES)
         return
-    for sentence, offsets_dict, score in sentences:
+    for sentence, offsets_dict, score in nodes_trie:
         filename, offset_list = next(iter(offsets_dict.items()))
-        offset_value = offset_list[0]
+        offset_value = offset_list[OFFSET_VALUE]
         result = acd.AutoCompleteData(sentence, filename, offset_value, score)
         print(result)
 

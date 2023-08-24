@@ -5,6 +5,8 @@ replaced_letter_error = 5
 miss_or_add_letter_error = 10
 replaced_error_count = 1
 miss_or_add_error_count = 2
+max_error_to_sub = 5
+mistake_threshold = 1
 
 
 class TrieNode:
@@ -27,7 +29,7 @@ class PrefixTree:
                 prefix = ' '.join(words[:i + 1])
                 current.children[word] = TrieNode(prefix)
             current = current.children[word]
-            current.word = sentence  # Store the sentence in the current node
+            current.word = sentence
         current.is_end = True
 
         if filename in current.offset:
@@ -55,22 +57,28 @@ class PrefixTree:
 
         word = word_list[index]
         for child_word in current.children:
-            distance = lev.distance(word, child_word)
-            if distance <= 1:
-                if distance == 1 and len(word) == len(child_word):
+            editops = lev.editops(word, child_word)
+            distance = len(editops)
+
+            # distance = lev.distance(word, child_word)
+            if distance <= mistake_threshold:
+                if distance == mistake_threshold and editops[0][0] == 'replace':
                     score = self.fix_score(word, child_word, score, replaced_letter_error, replaced_error_count)
-                else:
+                elif distance == mistake_threshold and editops[0][0] in ['insert', 'delete']:
                     score = self.fix_score(word, child_word, score, miss_or_add_letter_error, miss_or_add_error_count)
 
                 new_path = path + [child_word]
                 self.dfs_find(current.children[child_word], word_list, index + 1, new_path, matched_sentences, score)
 
     def fix_score(self, word, child_word, score, error, error_count):
+        if len(word) > len(child_word): # get shorter word
+            word, child_word = child_word, word
+
         for i in range(len(word)):
             if word[i] != child_word[i]:
                 score -= error
                 break
-            if i > 5:
+            if i > max_error_to_sub:
                 continue
             error -= error_count
         return score
