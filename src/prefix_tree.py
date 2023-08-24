@@ -57,18 +57,21 @@ class PrefixTree:
 
         word = word_list[index]
         for child_word in current.children:
+
             editops = lev.editops(word, child_word)
             distance = len(editops)
 
-            # distance = lev.distance(word, child_word)
             if distance <= mistake_threshold:
-                if distance == mistake_threshold and editops[0][0] == 'replace':
-                    score = self.fix_score(word, child_word, score, replaced_letter_error, replaced_error_count)
-                elif distance == mistake_threshold and editops[0][0] in ['insert', 'delete']:
-                    score = self.fix_score(word, child_word, score, miss_or_add_letter_error, miss_or_add_error_count)
-
+                score = self.set_score(word, child_word, editops, distance, score)
                 new_path = path + [child_word]
                 self.dfs_find(current.children[child_word], word_list, index + 1, new_path, matched_sentences, score)
+
+    def set_score(self, word, child_word, editops, distance, score):
+        if distance == mistake_threshold and editops[0][0] == 'replace':
+            return self.fix_score(word, child_word, score, replaced_letter_error, replaced_error_count)
+        elif distance == mistake_threshold and editops[0][0] in ['insert', 'delete']:
+            return self.fix_score(word, child_word, score, miss_or_add_letter_error, miss_or_add_error_count)
+        return score
 
     def fix_score(self, word, child_word, score, error, error_count):
         if len(word) > len(child_word): # get shorter word

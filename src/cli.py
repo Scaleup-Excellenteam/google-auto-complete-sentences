@@ -1,5 +1,7 @@
+from time import time
+import logs.log as logger
 import parse_data as pd
-import auto_complete_data as acd
+from src import auto_complete_data as acd
 
 WELCOME_MSG = "****************** WELCOME TO OUR SEARCH SYSTEM ******************"
 GET_INPUT = "Enter a sentence (or # to restart, ~ to quit):"
@@ -14,7 +16,13 @@ OFFSET_VALUE = 0
 def get_nodes(tree, sentence):
     sentence = pd.clean_sentence(sentence)
     sentence = pd.lowercase_and_remove_punctuation(sentence)
+
+    start_time = time()
     nodes_trie = tree.find_sentences_starting_with(sentence)
+    finish_time = time()
+    response_time = finish_time - start_time
+    logger.get_logger().info(f"Time to get response for searching {sentence}: {response_time}")
+
     return nodes_trie
 
 
