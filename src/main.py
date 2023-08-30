@@ -15,6 +15,7 @@ def main():
     response_time = finish_time - start_time
     logger.get_logger().info(f"Time to load full tree: {response_time}")
     cli.run_cli(tree)
+    logger.get_logger().info('End\n\n')
 
 
 if __name__ == "__main__":

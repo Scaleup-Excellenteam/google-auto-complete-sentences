@@ -21,7 +21,7 @@ def get_nodes(tree, sentence):
     nodes_trie = tree.find_sentences_starting_with(sentence)
     finish_time = time()
     response_time = finish_time - start_time
-    logger.get_logger().info(f"Time to get response for searching {sentence}: {response_time}")
+    logger.get_logger().info(f"Time to get response for searching '{sentence}': {response_time}")
 
     return nodes_trie
 
